@@ -4,7 +4,7 @@ function ShapeEntity(Interceptor, shapeObject, arguments, canvasX, canvasY) {
     BaseEntity.call(self, shapeObject, arguments, canvasX, canvasY);
     this.areaAbs = 0;
     this.currentEllipseMode = Interceptor.currentEllipseMode;
-    this.type = Interceptor.currentColor + ` ` + shapeObject.name + ` ` + this.currentEllipseMode;
+    this.type = Interceptor.currentColor + ` ` + shapeObject.name;
     this.area = 0;
 
     this.populate = function(shapeObject, arguments, canvasX, canvasY) {
