@@ -2,7 +2,7 @@ function calculateColor(hsv) {
     let colortext;
     if (hsv[0] !== 0) {
         hsv[0] = Math.round(hsv[0] * 100);
-        hue = hsv[0].toString().split(``);
+        let hue = hsv[0].toString().split(``);
         const last = hue.length - 1;
         hue[last] = parseInt(hue[last]);
         if (hue[last] < 2.5) {
@@ -47,9 +47,9 @@ function calculateColor(hsv) {
             }
         }
     } else {
-        for (let i = 0; i < color_lookup.length; i++) {
-            if ((color_lookup[i].h === hsv[0]) && (color_lookup[i].s === hsv[1]) && (color_lookup[i].b === hsv[2])) {
-                colortext = color_lookup[i].name;
+        for (let i = 0; i < colorLookUp.length; i++) {
+            if ((colorLookUp[i].h === hsv[0]) && (colorLookUp[i].s === hsv[1]) && (colorLookUp[i].b === hsv[2])) {
+                colortext = colorLookUp[i].name;
                 break;
             }
         }
@@ -141,7 +141,7 @@ const xcp = [{
     },
 ];
 
-const color_lookup = [{
+const colorLookUp = [{
         "h": 0,
         "s": 0,
         "b": 0,
@@ -838,6 +838,7 @@ function baseInterceptor() {
   this.prevTotalCount = 0,
   this.totalCount = 0,
   this.currentColor = 'white',
+  this.currentEllipseMode = 'center',
   this.bgColor = 'white',
   this.objectArea = 0,
   this.coordinates = [],
@@ -871,12 +872,12 @@ baseInterceptor.prototype.getColorName = function(colArgs) {
       const rgb = '(0, 0, 0)';
       if (trans === 0) {
         return ({
-          'color': 'black',
+          'color': 'black' + ' ',
           rgb
         });
       } else {
         return ({
-          'color': 'black with ' + trans + '% tranparency',
+          'color': 'black with ' + trans + '% tranparency' + ' ',
           rgb
         });
       }
@@ -884,12 +885,12 @@ baseInterceptor.prototype.getColorName = function(colArgs) {
       const rgb = '(255, 255, 255)';
       if (trans === 0) {
         return ({
-          'color': 'white',
+          'color': 'white' + ' ',
           rgb
         });
       } else {
         return ({
-          'color': 'white with ' + trans + '% tranparency',
+          'color': 'white with ' + trans + '% tranparency' + ' ',
           rgb
         });
       }
@@ -897,12 +898,12 @@ baseInterceptor.prototype.getColorName = function(colArgs) {
       const rgb = '(' + Math.round(colArgs[0]) + ', ' + Math.round(colArgs[0]) + ', ' + Math.round(colArgs[0]) + ')';
       if (trans === 0) {
         return ({
-          'color': 'gray',
+          'color': 'gray' + ' ',
           rgb
         });
       } else {
         return ({
-          'color': 'gray with ' + trans + '% tranparency',
+          'color': 'gray with ' + trans + '% tranparency' + ' ',
           rgb
         });
       }
@@ -912,19 +913,19 @@ baseInterceptor.prototype.getColorName = function(colArgs) {
       if (colArgs[0] < 10) {
         const rgb = '(0, 0, 0)';
         return ({
-          'color': 'black',
+          'color': 'black' + ' ',
           rgb
         });
       } else if (colArgs[0] > 240) {
         const rgb = '(255, 255, 255)';
         return ({
-          'color': 'white',
+          'color': 'white' + ' ',
           rgb
         });
       } else {
         const rgb = '(' + colArgs[0] + ', ' + colArgs[0] + ', ' + colArgs[0] + ')';
         return ({
-          'color': 'grey',
+          'color': 'grey' + ' ',
           rgb
         });
       }
@@ -944,14 +945,14 @@ baseInterceptor.prototype.getColorName = function(colArgs) {
         }
       }else{
         return ({
-          'color': 'white',
+          'color': 'white' + ' ',
           'rgb' : '(255, 255, 255)'
         });
       }
     }
   } else {
     return ({
-      'color': 'white',
+      'color': 'white' + ' ',
       'rgb' : '(255, 255, 255)'
     });
   }
@@ -973,7 +974,7 @@ function getRGBAname(colArgs) {
     });
   } else {
     return ({
-      'color': colorName,
+      'color': colorName + ' ',
       rgb
     });
   }
@@ -983,7 +984,7 @@ function getRGBname(colArgs) {
   const colorName = rgbColorName(colArgs[0], colArgs[1], colArgs[2]);
   const rgb = '(' + Math.round(colArgs[0]) + ', ' + Math.round(colArgs[1]) + ', ' + Math.round(colArgs[2]) + ')';
   return ({
-    'color': colorName,
+    'color': colorName + ' ',
     rgb
   });
 }
@@ -1001,7 +1002,7 @@ function getHexname(colArgs) {
   const b = parseInt(hex[4] + hex[5], 16);
   const rgb = '(' + r + ', ' + g + ', ' + b + ')';
   return ({
-    'color': colorName,
+    'color': colorName + ' ',
     rgb
   });
 }
@@ -1072,6 +1073,7 @@ function RGBAString(colArgs) {
     }
   }
 }
+
 function RGBString(colArgs) {
   if (colArgs[0].match(/%/)) {
     if (((colArgs[0].match(/%/g)).length) === 3) {
@@ -1248,6 +1250,9 @@ Registry.register(FillEntity);
   this.type = Interceptor.currentColor + ` ` + shapeObject.name;
   this.area = 0;
   this.length = 0;
+  this.currentEllipseMode = Interceptor.currentEllipseMode;
+
+
 
   this.populate = function(shapeObject, arguments, canvasX, canvasY) {
     this.location = this.getLocation(shapeObject, arguments, canvasX, canvasY);
@@ -1268,7 +1273,7 @@ Registry.register(FillEntity);
         coordinates: this.coordinates,
         area: this.area
       })
-    } 
+    }
     else if(!shapeObject.name.localeCompare(`line`)) {
       return ({
         type: this.type,
@@ -1276,12 +1281,12 @@ Registry.register(FillEntity);
         coordinates: this.coordinates,
         length : this.length
       })
-    } 
+    }
     else {
       return ({
         type: this.type,
         location: this.location,
-        coordinates: this.coordinates         
+        coordinates: this.coordinates
       })
     }
   };
@@ -1318,7 +1323,15 @@ Registry.register(FillEntity);
         }
       }
     } else if (!objectType.localeCompare(`ellipse`)) {
-      objectArea = 3.14 * shapeArgs[2] * shapeArgs[3] / 4;
+      if(!this.currentEllipseMode.localeCompare(`center`)) {
+        objectArea = 3.14 * shapeArgs[2] * shapeArgs[3] / 4;
+      } else if(!this.currentEllipseMode.localeCompare(`radius`)) {
+        objectArea = 3.14 * shapeArgs[2] * shapeArgs[3];
+      } else if(!this.currentEllipseMode.localeCompare(`corner`)) {
+        objectArea = 3.14 * shapeArgs[2] * shapeArgs[3] / 4;
+      } else if(!this.currentEllipseMode.localeCompare(`corners`)) {
+        objectArea = 3.14 * Math.abs(shapeArgs[2] - shapeArgs[0]) * Math.abs(shapeArgs[3] - shapeArgs[1]) / 4;
+      }
     } else if (!objectType.localeCompare(`line`)) {
       objectArea = 0;
     } else if (!objectType.localeCompare(`point`)) {
@@ -1362,12 +1375,11 @@ ShapeEntity.isParameter = false;
 
 /* global Registry */
 Registry.register(ShapeEntity);
-;function TextEntity(Interceptor, shapeObject, arguments, canvasX, canvasY) {
-
+;function TextEntity(Interceptor, shapeObject, textArgs, canvasX, canvasY) {
   const self = this;
   /* global BaseEntity */
   BaseEntity.call(self, shapeObject, textArgs, canvasX, canvasY);
-  this.type = String(textArgs[0]).substring(0, 20) + `(` + Interceptor.currentColor + `)`;
+  this.type = Interceptor.currentColor + ` ` + shapeObject.name + `: ` + String(textArgs[0]).substring(0, 20);
 
   this.populate = function(shapeObject, textArgs, canvasX, canvasY) {
     this.location = this.getLocation(shapeObject, textArgs, canvasX, canvasY);
@@ -1397,6 +1409,25 @@ TextEntity.isParameter = false;
 
 /* global Registry */
 Registry.register(TextEntity);
+;function EllipseModeEntity(Interceptor, shapeObject, modeArgs) // eslint-disable-line no-unused-vars
+{
+  this.populate = function(Interceptor) {
+    Interceptor.currentEllipseMode = modeArgs[0];
+  }
+  this.populate(Interceptor);
+}
+EllipseModeEntity.handledNames = [
+  `ellipseMode`
+]
+
+EllipseModeEntity.handles = function(name) {
+  return (this.handledNames.indexOf(name) >= 0);
+}
+
+EllipseModeEntity.isParameter = true;
+
+/* global Registry */
+Registry.register(EllipseModeEntity);
 ;function TextInterceptor() { // eslint-disable-line
   const self = this;
   /* global baseInterceptor */
